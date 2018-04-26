@@ -10,7 +10,7 @@ namespace Dex1WayConverted
     public class Contract1 : SmartContract
     {
         public static readonly byte[] Owner = "ANiSxR6mgYZxhTXpJqzjcnyFCQ16HVaC4W".ToScriptHash();
-        public static readonly byte[] address0 = Neo.SmartContract.Framework.Helper.AsByteArray("AMiSxR6mgYZxhTXpJqzjcnyFBQF6HVaC4W");
+       
 
         public static Object Main(string oper, params Object[] args)
         {
@@ -190,7 +190,7 @@ namespace Dex1WayConverted
 
 
 
-            if (oper == "getSellerHash")//
+            if (oper == "getSellerHash")
             {
                 byte[][] _sellerTokens = (byte[][])args[0];
                 BigInteger[] _sellerValues = (BigInteger[])args[1];
@@ -232,7 +232,7 @@ namespace Dex1WayConverted
             if (oper == "getTwoWayOrderHash") //[["sellerT","sellerT1","SellerT2"],["buyerT","buyerT1","buyerT2"],[500,450,400],[458,444,380],["AA1","BB1","CC1","DD1","EE1"],[540,450,580,550,650],["OI01"]]
             {
 
-                //
+               
 
                 byte[][] _sellerTokens = (byte[][])args[0];
                 byte[][] _buyerTokens = (byte[][])args[1];
@@ -254,7 +254,7 @@ namespace Dex1WayConverted
 
 
 
-            if (oper == "basicSigValidations") //
+            if (oper == "basicSigValidations") 
             {
                 byte[][] _orderAddresses = new byte[5][];
                 _orderAddresses = (byte[][])args[0];
@@ -1035,7 +1035,7 @@ namespace Dex1WayConverted
 
         public static Object validateAuthorization(byte[][] _sellerTokens, byte[][] _buyerTokens, BigInteger[] _sellerValues, BigInteger[] _buyerValues, byte[][] _orderAddresses, BigInteger[] _orderValues)
         {
-            object a1 = (allowance(_orderAddresses[2], address0));
+            object a1 = (allowance(_orderAddresses[2], ExecutionEngine.ExecutingScriptHash));
             BigInteger allow = (BigInteger)a1;
 
             if (allow <= _orderValues[1])
@@ -1044,22 +1044,34 @@ namespace Dex1WayConverted
 
             }
 
-            object a2 = (allowance( _orderAddresses[2], address0));
+            object a2 = (allowance( _orderAddresses[2], ExecutionEngine.ExecutingScriptHash));
             BigInteger allow1 = (BigInteger)a2;
 
 
 
-            if (allow1 <= _orderValues[1])
+            if (allow1 <= _orderValues[0])
             {
                 return false;
 
             }
 
-            object a3 = (allowance( _orderAddresses[2], address0));
+            object a3 = (allowance( _orderAddresses[2], ExecutionEngine.ExecutingScriptHash));
             BigInteger allow2 = (BigInteger)a3;
             for (uint i = 0; i <= _buyerTokens.Length; i++)
             {
                 if (allow2 <= _buyerValues[i])
+                {
+                    return false;
+
+                }
+            }
+
+
+            object a4 = (allowance(_orderAddresses[1], ExecutionEngine.ExecutingScriptHash));
+            BigInteger allow3 = (BigInteger)a4;
+            for (uint i = 0; i <= _sellerTokens.Length; i++)
+            {
+                if (allow3 <= _sellerValues[i])
                 {
                     return false;
 
