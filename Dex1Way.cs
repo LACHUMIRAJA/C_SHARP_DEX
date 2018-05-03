@@ -9,7 +9,7 @@ namespace Dex1WayConverted
 {
     public class Contract1 : SmartContract
     {
-        public static readonly byte[] Owner = "ANiSxR6mgYZxhTXpJqzjcnyFCQ16HVaC4W".ToScriptHash();
+        public static readonly byte[] Owner = "APM9y5gA3dquRMUDN5Q2drJfjWXvpMYZP9".ToScriptHash();
 
         public delegate object NEP5Contract(string method, object[] args);
 
@@ -26,6 +26,7 @@ namespace Dex1WayConverted
                 byte[] approver = (byte[])args[0];
                 byte[] _baseToken = (byte[])args[1];
                 byte[] _etherToken = (byte[])args[2];
+                Runtime.Notify("deployed successfully");
                 return deploy(approver, _baseToken, _etherToken);
             }
 
@@ -147,7 +148,7 @@ namespace Dex1WayConverted
                 {
                     byte[] oHash = (byte[])args[0];
                     byte[] orderId = ((byte[])args[1]);
-                   
+
                     return storeVault(oHash, orderId);
                 }
 
@@ -251,7 +252,7 @@ namespace Dex1WayConverted
             * @param _orderAddresses Contains maker, seller, buyer, seller fee token, and buyer fee token addresses
             * @return seller Address if seller signtaures are valid and if buyer signature are valid returns the buyer Address else return false 
             */
-            if (oper == "basicSigValidations") 
+            if (oper == "basicSigValidations")
             {
                 byte[][] _orderAddresses = new byte[5][];
                 _orderAddresses = (byte[][])args[0];
@@ -353,8 +354,8 @@ namespace Dex1WayConverted
             {
                 byte[] hash = (byte[])args[0];
                 byte[] orderId = (byte[])args[1];
-                Runtime.Log("Order  Location Checked");             
-               return (Storage.Get(Storage.CurrentContext, hash.Concat(Neo.SmartContract.Framework.Helper.AsByteArray(" "))).Equals("orderhash"));
+                Runtime.Notify("Order  Location Checked");
+                return (Storage.Get(Storage.CurrentContext, hash.Concat(Neo.SmartContract.Framework.Helper.AsByteArray(" "))).Equals("orderhash"));
             }
 
 
@@ -395,7 +396,7 @@ namespace Dex1WayConverted
                 byte[] _signer = (byte[])args[4];
 
                 //return Main("ecverify", address, _msgHash, v, r, s, _signer);
-                if(Runtime.CheckWitness(_signer))
+                if (Runtime.CheckWitness(_signer))
                 {
                     return true;
                 }
@@ -454,24 +455,24 @@ namespace Dex1WayConverted
             * @param _orderID from Database
             */
             if (oper == "oneWayFulfillPO")
-              {
-                   byte[][] _sellerTokens = (byte[][])args[0];
-                   byte[][] _buyerTokens = (byte[][])args[1];
-                   BigInteger[] _sellerValues = (BigInteger[])args[2];
-                   BigInteger[] _buyerValues = (BigInteger[])args[3];
-                   byte[][] _orderAddresses = new byte[5][];
-                   _orderAddresses = (byte[][])args[4];
-                   BigInteger[] _orderValues = new BigInteger[5];
-                   _orderValues = (BigInteger[])args[5];
-                   uint[] _v = new uint[2];
-                   _v = (uint[])args[6];
-                   byte[] _br = (byte[])args[7];
-                   byte[] _bs = (byte[])args[8];
-                   byte[] _sr = (byte[])args[9];
-                   byte[] _ss = (byte[])args[10];
-                   byte[] _orderID = (byte[])args[11];
+            {
+                byte[][] _sellerTokens = (byte[][])args[0];
+                byte[][] _buyerTokens = (byte[][])args[1];
+                BigInteger[] _sellerValues = (BigInteger[])args[2];
+                BigInteger[] _buyerValues = (BigInteger[])args[3];
+                byte[][] _orderAddresses = new byte[5][];
+                _orderAddresses = (byte[][])args[4];
+                BigInteger[] _orderValues = new BigInteger[5];
+                _orderValues = (BigInteger[])args[5];
+                uint[] _v = new uint[2];
+                _v = (uint[])args[6];
+                byte[] _br = (byte[])args[7];
+                byte[] _bs = (byte[])args[8];
+                byte[] _sr = (byte[])args[9];
+                byte[] _ss = (byte[])args[10];
+                byte[] _orderID = (byte[])args[11];
 
-                   return oneWayFulfillPO(_sellerTokens, _buyerTokens, _sellerValues, _buyerValues, _orderAddresses, _orderValues, _v, _br, _bs, _sr, _ss, _orderID);               
+                return oneWayFulfillPO(_sellerTokens, _buyerTokens, _sellerValues, _buyerValues, _orderAddresses, _orderValues, _v, _br, _bs, _sr, _ss, _orderID);
             }
 
             return false;
@@ -494,6 +495,7 @@ namespace Dex1WayConverted
                 Storage.Put(Storage.CurrentContext, "Active", 1);
                 Storage.Put(Storage.CurrentContext, "BaseToken", _baseToken);
                 Storage.Put(Storage.CurrentContext, "EtherToken", _etherToken);
+                Runtime.Notify("deployed success");
                 return true;
             }
             return true;
@@ -507,6 +509,7 @@ namespace Dex1WayConverted
                 Storage.Put(Storage.CurrentContext, "0", baseTokenFee);
                 Storage.Put(Storage.CurrentContext, "1", etherTokenFee);
                 Storage.Put(Storage.CurrentContext, "2", normalTokenFee);
+                Runtime.Notify("updated fee schedules");
             }
             return true;
         }
@@ -521,7 +524,7 @@ namespace Dex1WayConverted
             if (check1.Equals(0) && (check.Equals(0)))
             {
                 Storage.Put(Storage.CurrentContext, "Approver", newApprover);
-                Runtime.Log("Approver Changed");
+                Runtime.Notify("Approver Changed");
                 return true;
             }
             return false;
@@ -531,7 +534,7 @@ namespace Dex1WayConverted
         public static bool addAuthorizedAddress(byte[] appIntegrator)
         {
             Storage.Put(Storage.CurrentContext, appIntegrator, 1);
-            Runtime.Log("Authorized Address Added");
+            Runtime.Notify("Authorized Address Added");
             return true;
         }
 
@@ -543,7 +546,7 @@ namespace Dex1WayConverted
             {
                 Storage.Delete(Storage.CurrentContext, appIntegrator);
             }
-            Runtime.Log("Authorized Address Removed");
+            Runtime.Notify("Authorized Address Removed");
             return true;
         }
 
@@ -565,6 +568,7 @@ namespace Dex1WayConverted
             {
                 Storage.Delete(Storage.CurrentContext, reowner);
                 Storage.Delete(Storage.CurrentContext, reowner.Concat(Neo.SmartContract.Framework.Helper.AsByteArray("owner")));
+                Runtime.Notify("remove successfull");
                 return true;
             }
             return true;
@@ -582,7 +586,7 @@ namespace Dex1WayConverted
                 Storage.Put(Storage.CurrentContext, "starttime", startTime);
                 Storage.Put(Storage.CurrentContext, "closuretime", closureTime);
                 Storage.Put(Storage.CurrentContext, "Vault is Open", 1);
-                Runtime.Log("Vault is Opened");
+                Runtime.Notify("Vault is Opened");
             }
             else
             {
@@ -590,9 +594,10 @@ namespace Dex1WayConverted
                 if (Storage.Get(Storage.CurrentContext, "Vault is Open")[0] == 0)
                 {
                     Storage.Delete(Storage.CurrentContext, "Vault is Open");
+                    Runtime.Notify("vault is open");
                 }
 
-                 Runtime.Log("Vault is Closed");
+                Runtime.Notify("Vault is Closed");
             }
             return Storage.Get(Storage.CurrentContext, "Vault is Open");
         }
@@ -608,11 +613,12 @@ namespace Dex1WayConverted
                 if (Storage.Get(Storage.CurrentContext, "Vault is Open")[0] == 0)
                 {
                     Storage.Delete(Storage.CurrentContext, "Vault is Open");
+                    Runtime.Notify("vault is sealed");
                 }
-                Runtime.Log("Vault is closed and Sealed Successfully");
+                Runtime.Notify("Vault is closed and Sealed Successfully");
                 return Storage.Get(Storage.CurrentContext, "Vault is Seal");
             }
-            Runtime.Log("Vault is not Sealed");
+            Runtime.Notify("Vault is not Sealed");
             return Storage.Get(Storage.CurrentContext, "Vault is Seal");
         }
 
@@ -627,11 +633,11 @@ namespace Dex1WayConverted
             {
                 Storage.Put(Storage.CurrentContext, "closuretime", closureTime);
                 Storage.Put(Storage.CurrentContext, "Vault is Open", 1);
-                Runtime.Log("Vault Time is extended");
+                Runtime.Notify("Vault Time is extended");
                 return true;
             }
 
-            Runtime.Log("Vault Time is not extended");
+            Runtime.Notify("Vault Time is not extended");
             return false;
         }
 
@@ -644,18 +650,18 @@ namespace Dex1WayConverted
             BigInteger endTime = Neo.SmartContract.Framework.Helper.AsBigInteger(Storage.Get(Storage.CurrentContext, "closuretime"));
             byte[] check = Storage.Get(Storage.CurrentContext, "Vault is Open");
             byte[] check1 = Storage.Get(Storage.CurrentContext, "Vault is Seal");
-            Runtime.Log("Processing....");
+            Runtime.Notify("Processing....");
             Runtime.Notify(beginTime, endTime);
             if (check1.Equals(0) && check.Equals(1) && beginTime <= now && endTime >= now && endTime >= beginTime)
             {
                 Storage.Put(Storage.CurrentContext, oHash.Concat(Neo.SmartContract.Framework.Helper.AsByteArray(" ")), "orderhashes");
                 Storage.Put(Storage.CurrentContext, oHash, 1);
                 Storage.Put(Storage.CurrentContext, orderId, 1);
-                Runtime.Log("Well Stored");
+                Runtime.Notify("Well Stored");
             }
             else
             {
-                Runtime.Log("Vault Not Stored");
+                Runtime.Notify("Vault Not Stored");
             }
             return true;
         }
@@ -674,10 +680,10 @@ namespace Dex1WayConverted
                     Storage.Delete(Storage.CurrentContext, "Vault is Open");
                 }
 
-                Runtime.Log("Vault is Closed Successfully");
+                Runtime.Notify("Vault is Closed Successfully");
                 return true;
             }
-            Runtime.Log("Vault is does not Closed");
+            Runtime.Notify("Vault is does not Closed");
             return true;
         }
 
@@ -708,7 +714,7 @@ namespace Dex1WayConverted
             byte[] sorderv = Neo.SmartContract.Framework.Helper.AsByteArray(_orderValues[3]);
             byte[] sorderv1 = Neo.SmartContract.Framework.Helper.AsByteArray(_orderValues[0]);
             if (slength != 0)
-                Runtime.Log("SellerHash Processing.. ");
+                Runtime.Notify("SellerHash Processing.. ");
             for (int j = 0; j < slength; j++)
             {
                 sellerv = Neo.SmartContract.Framework.Helper.AsByteArray(_sellerValues[j]);
@@ -721,6 +727,7 @@ namespace Dex1WayConverted
                 sellerHash = Sha256(soa.Concat(soa1));
                 Storage.Put(Storage.CurrentContext, sellerHash, "orderHash");
                 Runtime.Notify(sellerHash);
+                Runtime.Notify("seller hash calculated");
             }
             return sellerHash;
         }
@@ -734,7 +741,7 @@ namespace Dex1WayConverted
             byte[] borderv = Neo.SmartContract.Framework.Helper.AsByteArray(_orderValues[4]);
             byte[] borderv1 = Neo.SmartContract.Framework.Helper.AsByteArray(_orderValues[0]);
             if (blength != 0)
-                Runtime.Log("BuyerHash Processing... ");
+                Runtime.Notify("BuyerHash Processing... ");
             for (int k = 0; k < blength; k++)
             {
                 buyerv = Neo.SmartContract.Framework.Helper.AsByteArray(_buyerValues[k]);
@@ -746,6 +753,7 @@ namespace Dex1WayConverted
                 byte[] boa1 = bc2.Concat(_orderAddresses[2]);
                 buyerHash = Sha256(boa.Concat(boa1));
                 Storage.Put(Storage.CurrentContext, buyerHash, "orderHash");
+                Runtime.Notify("buyerhash calculated");
                 Runtime.Notify(buyerHash);
             }
             return buyerHash;
@@ -760,6 +768,7 @@ namespace Dex1WayConverted
             byte[] BuyerHash = (byte[])getBuyerHash(_buyerTokens, _buyerValues, _orderAddresses, _orderValues, _orderID);
             byte[] twc = (ExecutionEngine.ExecutingScriptHash).Concat(SellerHash);
             byte[] twc1 = BuyerHash.Concat(twc).Concat(_orderID);
+            Runtime.Notify("twway calculaeeeeeeeeed");
             return Hash256(twc1);
         }
 
@@ -769,12 +778,14 @@ namespace Dex1WayConverted
             //if (!(Main("ecverify", _sellerHash, _v[0], _sr, _ss, _orderAddresses[1])).Equals(address0))
             if (Runtime.CheckWitness(_orderAddresses[1]))
             {
+                Runtime.Notify("verified true");
                 return _orderAddresses[1];
             }
 
             //if (!(Main("ecverify", _sellerHash, _v[1], _sr, _ss, _orderAddresses[2])).Equals(address0))
             if (Runtime.CheckWitness(_orderAddresses[2]))
             {
+                Runtime.Notify("verified as false");
                 return _orderAddresses[2];
             }
             return false;
@@ -790,7 +801,7 @@ namespace Dex1WayConverted
             byte[] token;
             for (uint i = 0; i < len; i++)
             {
-                Runtime.Log("Seller Transfer Process Count");
+                Runtime.Notify("Seller Transfer Process Count");
                 Runtime.Notify(i);
                 arg = new Object[] { _orderAddresses[1], _orderAddresses[2], _sellerValues[i] };
                 token = (byte[])_sellerTokens[i];
@@ -799,12 +810,12 @@ namespace Dex1WayConverted
                 //transferFrom(_orderAddresses[1], _orderAddresses[2], _sellerValues[i]);
             }
 
-            Runtime.Log("Seller Values Are Transferred Successfully");
+            Runtime.Notify("Seller Values Are Transferred Successfully");
             int len1 = _buyerTokens.Length;
 
             for (uint i = 0; i < len1; i++)
             {
-                Runtime.Log("Buyer Transfer Process Count");
+                Runtime.Notify("Buyer Transfer Process Count");
                 Runtime.Notify(i);
                 token = (byte[])_buyerTokens[i];
                 arg = new Object[] { _orderAddresses[2], _orderAddresses[1], _buyerValues[i] };
@@ -813,19 +824,19 @@ namespace Dex1WayConverted
                 //transferFrom(_orderAddresses[2], _orderAddresses[1], _buyerValues[i]);
             }
 
-            Runtime.Log("Wallet Transfer Process ");
+            Runtime.Notify("Wallet Transfer Process ");
             byte[] wallet = Storage.Get(Storage.CurrentContext, "Wallet");
             token = (byte[])_orderAddresses[3];
             arg = new Object[] { _orderAddresses[1], wallet, _orderValues[0] };
             var Contract = (NEP5Contract)token.ToDelegate();
             Contract("transfer", arg);
             //transferFrom(_orderAddresses[1], wallet, _orderValues[0]);
-            
+
             token = (byte[])_orderAddresses[4];
             arg = new object[] { _orderAddresses[2], wallet, _orderValues[1] };
             Contract = (NEP5Contract)token.ToDelegate();
             Contract("transfer", arg);
-           // transferFrom(_orderAddresses[2], wallet, _orderValues[1]);
+            // transferFrom(_orderAddresses[2], wallet, _orderValues[1]);
 
             return true;
         }
@@ -836,7 +847,7 @@ namespace Dex1WayConverted
         {
             var arg = new Object[] { _orderAddresses[2], (byte[])ExecutionEngine.ExecutingScriptHash };
             byte[] token = (byte[])_orderAddresses[4];
-           
+
 
             var Contract = (NEP5Contract)token.ToDelegate();
             var result = (BigInteger)Contract("allowance", arg);
@@ -869,9 +880,9 @@ namespace Dex1WayConverted
                 if (result <= _sellerValues[i])
                     return false;
             }
-            return true;        
-    }
-        
+            return true;
+        }
+
         public static Object calcTradeFee(BigInteger values, uint feeIndex)
         {
             byte[] check;
@@ -936,7 +947,7 @@ namespace Dex1WayConverted
         }
 
 
-        public static bool oneWayFulfillPO(byte[][] _sellerTokens, byte[][] _buyerTokens, BigInteger [] _sellerValues, BigInteger [] _buyerValues, byte[][] _orderAddresses,
+        public static bool oneWayFulfillPO(byte[][] _sellerTokens, byte[][] _buyerTokens, BigInteger[] _sellerValues, BigInteger[] _buyerValues, byte[][] _orderAddresses,
                 BigInteger[] _orderValues, uint[] _v, byte[] _br, byte[] _bs, byte[] _sr, byte[] _ss, byte[] _orderID)
         {
             BigInteger now = Blockchain.GetHeader(Blockchain.GetHeight()).Timestamp;
@@ -998,3 +1009,4 @@ namespace Dex1WayConverted
 
     }
 }
+//sh: 0xa43e68d474edb7c6e1d108cd9430800e655283af
